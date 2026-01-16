@@ -12,14 +12,14 @@ interface PostResult {
   title: string;
 }
 
-async function getPostsByUser(userId: number): Promise<PostResult[]> {
+export async function getPostsByUser(userId: number): Promise<PostResult[]> {
   try {
     const response = await axios.get<Post[]>(
       "https://jsonplaceholder.typicode.com/posts"
     );
 
     return response.data
-      .filter((post) => post.userId === userId)   // ใช้ array method
+      .filter((post) => post.userId === userId)
       .map((post) => ({
         id: post.id,
         title: post.title,
@@ -28,4 +28,3 @@ async function getPostsByUser(userId: number): Promise<PostResult[]> {
     return [];
   }
 }
-
