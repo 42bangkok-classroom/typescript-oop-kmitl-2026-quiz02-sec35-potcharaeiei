@@ -1,28 +1,27 @@
 import axios from "axios"
 
 type ApiComment = {
-  postId?: number | null
-  id: number
-  body: string
+  postId: number | null | undefined
 }
 
-type CommentCount = {
-  [postId: number]: number
-}
-
-export async function countCommentsByPost(): Promise<CommentCount> {
+export async function countCommentsByPost(): Promise<Record<number, number>> {
   try {
     const response = await axios.get<ApiComment[]>(
       "https://jsonplaceholder.typicode.com/comments"
     )
+    const comments = response.data
 
-    return response.data.reduce<CommentCount>((result, comment) => {
-      if (comment.postId == null) {
-        return result
+    if (comments.length === 0) {
+      return {}
+    }
+
+    return comments.reduce<Record<number, number>>((acc, comment) => {
+      const postId = comment.postId
+      if (typeof postId !== "number") {
+        return acc
       }
-
-      result[comment.postId] = (result[comment.postId] ?? 0) + 1
-      return result
+      acc[postId] = (acc[postId] ?? 0) + 1
+      return acc
     }, {})
   } catch {
     return {}
